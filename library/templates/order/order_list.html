@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>All orders</h1><p class="muted">{{ orders|length }} order{{ orders|length|pluralize }}</p></div>
+</div>
+
+<div class="tabs">
+  {% for value, label in statuses %}
+    <a class="tab {% if status == value %}active{% endif %}" href="{% query_with status=value %}">{{ label }}</a>
+  {% endfor %}
+</div>
+<form class="toolbar" method="get">
+  <input type="hidden" name="status" value="{{ status }}">
+  <input type="search" name="q" value="{{ query }}" placeholder="Search by book title or reader">
+  <button class="btn btn-primary" type="submit">Search</button>
+  {% if query %}<a class="btn btn-secondary" href="{% query_with q='' %}">Reset</a>{% endif %}
+</form>
+
+<div class="card flush">
+  {% if orders %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Book</th><th>Reader</th><th>Created</th><th>Return by</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td class="muted">{{ order.id }}</td>
+            <td><a href="{% url 'book_detail' order.book.id %}"><strong>{{ order.book.name }}</strong></a></td>
+            <td><a href="{% url 'user_detail' order.user.id %}">{{ order.user.full_name }}</a></td>
+            <td>{{ order.created_at|date:'d.m.Y' }}</td>
+            <td>{{ order.plated_end_at|date:'d.m.Y' }}</td>
+            <td>{% include 'order/_status_badge.html' %}</td>
+            <td class="actions">
+              <a class="btn btn-secondary btn-sm" href="{% url 'order_edit' order.id %}">Edit</a>
+              {% if not order.end_at %}
+                <form class="inline-form" method="post" action="{% url 'order_close' order.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button class="btn btn-primary btn-sm" type="submit">Close</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty"><div class="icon">📋</div>No orders here.</div>
+  {% endif %}
+</div>
+{% endblock %}

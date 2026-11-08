@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% block title %}Books{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Books</h1><p class="muted">Find a book by title, author or description.</p></div>
+  {% if user.is_librarian %}<a class="btn btn-primary" href="{% url 'book_create' %}">+ Add book</a>{% endif %}
+</div>
+
+<div class="grid grid-sidebar">
+  <aside class="card filters">
+    <h2>Filters</h2>
+    <form method="get">
+      {% include 'includes/field.html' with field=form.q %}
+      {% include 'includes/field.html' with field=form.author %}
+      {% include 'includes/field.html' with field=form.description %}
+      {% include 'includes/field.html' with field=form.sort %}
+      {% include 'includes/field.html' with field=form.available %}
+      <div class="btn-row">
+        <button class="btn btn-primary" type="submit">Apply</button>
+        <a class="btn btn-secondary" href="{% url 'book_list' %}">Reset</a>
+      </div>
+    </form>
+  </aside>
+
+  <section>
+    <div class="result-bar">
+      <span class="muted">{{ books|length }} book{{ books|length|pluralize }}{% if is_filtered %} match your filters{% endif %}</span>
+    </div>
+    {% if books %}
+      <div class="book-grid">
+        {% for book in books %}
+          <a class="book-card" href="{% url 'book_detail' book.id %}">
+            <div class="cover {{ book.id|cover }}">{{ book.name }}</div>
+            <div class="book-body">
+              <div class="book-authors">{% for author in book.authors.all %}{{ author.full_name }}{% if not forloop.last %}, {% endif %}{% empty %}Unknown author{% endfor %}</div>
+              <div class="small muted">{{ book.description|truncatechars:80 }}</div>
+              <div class="book-meta">
+                {% if book.available > 0 %}<span class="badge badge-green">{{ book.available }} of {{ book.count }} available</span>{% else %}<span class="badge badge-red">All copies taken</span>{% endif %}
+                <span class="small muted">{% if book.year %}{{ book.year }} · {% endif %}#{{ book.id }}</span>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card empty"><div class="icon">🔍</div>No books found. Try changing the filters.</div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

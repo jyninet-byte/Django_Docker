@@ -1,0 +1,1 @@
+{% if order.end_at %}<span class="badge badge-gray">Closed {{ order.end_at|date:'d.m.Y' }}</span>{% elif order.is_overdue %}<span class="badge badge-red">Overdue</span>{% else %}<span class="badge badge-green">Open</span>{% endif %}

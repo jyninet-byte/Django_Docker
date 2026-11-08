@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Edit {{ author.full_name }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'author_list' %}">← All authors</a></p>
+<div class="auth-wrap narrow">
+  <div class="card">
+    <h1>Edit author</h1>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include 'includes/form_errors.html' %}
+      {% for field in form %}{% include 'includes/field.html' %}{% endfor %}
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" type="submit">Save changes</button>
+        <a class="btn btn-secondary" href="{% url 'author_list' %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

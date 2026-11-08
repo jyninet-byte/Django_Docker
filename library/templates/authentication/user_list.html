@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Users</h1><p class="muted">{{ users|length }} user{{ users|length|pluralize }} found</p></div>
+</div>
+
+<form class="toolbar" method="get">
+  <input type="search" name="q" value="{{ query }}" placeholder="Search by name or email">
+  <select name="role">
+    <option value="">All roles</option>
+    {% for value, label in roles %}
+      <option value="{{ value }}" {% if role == value|stringformat:'s' %}selected{% endif %}>{{ label|capfirst }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-primary" type="submit">Search</button>
+  {% if query or role %}<a class="btn btn-secondary" href="{% url 'user_list' %}">Reset</a>{% endif %}
+</form>
+
+<div class="card flush">
+  {% if users %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Books now</th><th>Orders total</th><th></th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td class="muted">{{ u.id }}</td>
+          <td><a href="{% url 'user_detail' u.id %}"><strong>{{ u.full_name }}</strong></a></td>
+          <td>{{ u.email }}</td>
+          <td>{% if u.is_librarian %}<span class="badge badge-brass">Librarian</span>{% else %}<span class="badge badge-blue">Reader</span>{% endif %}</td>
+          <td>{% if u.open_orders %}<span class="badge badge-green">{{ u.open_orders }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+          <td>{{ u.total_orders }}</td>
+          <td class="actions">
+            <a class="btn btn-secondary btn-sm" href="{% url 'user_detail' u.id %}">Profile</a>
+            <a class="btn btn-secondary btn-sm" href="{% url 'user_books' u.id %}">Books</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty"><div class="icon">👤</div>No users match your search.</div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Access denied{% endblock %}
+{% block content %}
+<div class="card error-page">
+  <div class="code">403</div>
+  <h1>Access denied</h1>
+  <p class="muted">This page is available only for {% if user.is_librarian %}readers{% else %}librarians{% endif %}.</p>
+  <a class="btn btn-primary" href="{% url 'book_list' %}">Back to books</a>
+</div>
+{% endblock %}

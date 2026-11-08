@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Every book in one place.</h1>
+  <p>Browse the catalogue, take books home and keep track of when to bring them back. Librarians manage authors, readers and orders.</p>
+  <div class="hero-actions">
+    {% if user.is_authenticated %}
+      <a class="btn btn-primary" style="background:var(--brass)" href="{% url 'book_list' %}">Browse books</a>
+      {% if user.is_librarian %}
+        <a class="btn btn-secondary" href="{% url 'order_list' %}">Manage orders</a>
+      {% else %}
+        <a class="btn btn-secondary" href="{% url 'my_orders' %}">My orders</a>
+      {% endif %}
+    {% else %}
+      <a class="btn btn-primary" style="background:var(--brass)" href="{% url 'register' %}">Create an account</a>
+      <a class="btn btn-secondary" href="{% url 'login' %}">Log in</a>
+    {% endif %}
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><strong>{{ books_count }}</strong><span>books in the catalogue</span></div>
+  <div class="stat"><strong>{{ authors_count }}</strong><span>authors</span></div>
+  <div class="stat"><strong>{{ open_orders_count }}</strong><span>books being read right now</span></div>
+</div>
+
+{% if latest_books %}
+  <div class="page-head"><h2>New arrivals</h2>{% if user.is_authenticated %}<a href="{% url 'book_list' %}?sort=-id">See all →</a>{% endif %}</div>
+  <div class="book-grid">
+    {% for book in latest_books %}
+      <a class="book-card" href="{% if user.is_authenticated %}{% url 'book_detail' book.id %}{% else %}{% url 'login' %}{% endif %}">
+        <div class="cover {{ book.id|cover }}">{{ book.name }}</div>
+        <div class="book-body">
+          <div class="book-authors">{% for author in book.authors.all %}{{ author.full_name }}{% if not forloop.last %}, {% endif %}{% empty %}Unknown author{% endfor %}</div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

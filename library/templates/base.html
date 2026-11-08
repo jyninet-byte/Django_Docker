@@ -1,0 +1,62 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Library{% endblock %} · Library</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+{% with url_name=request.resolver_match.url_name %}
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="{% url 'home' %}"><span class="brand-mark">📚</span>Library</a>
+    <nav class="nav">
+      {% if user.is_authenticated %}
+        <a href="{% url 'book_list' %}" class="{% if url_name == 'book_list' or url_name == 'book_detail' %}active{% endif %}">Books</a>
+        {% if user.is_librarian %}
+          <a href="{% url 'order_list' %}" class="{% if url_name == 'order_list' %}active{% endif %}">Orders</a>
+          <a href="{% url 'user_list' %}" class="{% if url_name == 'user_list' or url_name == 'user_detail' or url_name == 'user_books' %}active{% endif %}">Users</a>
+          <a href="{% url 'author_list' %}" class="{% if url_name == 'author_list' or url_name == 'author_create' %}active{% endif %}">Authors</a>
+        {% else %}
+          <a href="{% url 'my_orders' %}" class="{% if url_name == 'my_orders' %}active{% endif %}">My orders</a>
+        {% endif %}
+      {% endif %}
+    </nav>
+    <div class="user-box">
+      {% if user.is_authenticated %}
+        <a class="who" id="current-user" href="{% url 'profile_edit' %}" style="color:#fff;text-decoration:none" title="Edit my profile">
+          {{ user.first_name }} {{ user.last_name }}
+          <small>{% if user.is_librarian %}<span class="role-badge">Librarian</span>{% else %}Reader{% endif %}</small>
+        </a>
+        <form class="inline-form" id="logout-form" method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" id="logout-button" class="btn btn-ghost btn-sm">Log out</button>
+        </form>
+      {% else %}
+        <a class="btn btn-ghost btn-sm" id="login-link" href="{% url 'login' %}">Log in</a>
+        <a class="btn btn-primary btn-sm" style="background:var(--brass)" href="{% url 'register' %}">Sign up</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+{% endwith %}
+
+<main>
+  <div class="container">
+    {% if messages %}
+      <ul class="messages" id="messages">
+        {% for message in messages %}
+          <li class="message {{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">Library · Selenium practical task</div>
+</footer>
+</body>
+</html>

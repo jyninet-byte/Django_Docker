@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Authors{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Authors</h1><p class="muted">{{ authors|length }} author{{ authors|length|pluralize }}. An author can be removed only when no books are attached.</p></div>
+</div>
+
+<div class="grid grid-sidebar">
+  <aside class="card">
+    <h2>New author</h2>
+    <form method="post" action="{% url 'author_create' %}" novalidate>
+      {% csrf_token %}
+      {% include 'includes/form_errors.html' %}
+      {% for field in form %}{% include 'includes/field.html' %}{% endfor %}
+      <button class="btn btn-primary btn-block" type="submit">Add author</button>
+    </form>
+  </aside>
+
+  <div class="card flush">
+    {% if authors %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Author</th><th>Books</th><th></th></tr></thead>
+        <tbody>
+          {% for author in authors %}
+            <tr>
+              <td class="muted">{{ author.id }}</td>
+              <td><strong>{{ author.full_name }}</strong></td>
+              <td class="small">
+                {% for book in author.books.all %}<a href="{% url 'book_detail' book.id %}">{{ book.name }}</a>{% if not forloop.last %}, {% endif %}{% empty %}<span class="badge badge-gray">no books</span>{% endfor %}
+              </td>
+              <td class="actions">
+                <a class="btn btn-secondary btn-sm" href="{% url 'author_edit' author.id %}">Edit</a>
+                {% if author.books_count %}
+                  <button class="btn btn-danger btn-sm" type="button" disabled title="The author is attached to {{ author.books_count }} book(s)">Remove</button>
+                {% else %}
+                  <form class="inline-form" method="post" action="{% url 'author_delete' author.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="empty"><div class="icon">✍️</div>No authors yet. Add the first one.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{% if book %}Edit {{ book.name }}{% else %}Add book{% endif %}{% endblock %}
+{% block content %}
+<p>{% if book %}<a href="{% url 'book_detail' book.id %}">← {{ book.name }}</a>{% else %}<a href="{% url 'book_list' %}">← All books</a>{% endif %}</p>
+<div class="auth-wrap" style="max-width:680px">
+  <div class="card">
+    <h1>{% if book %}Edit book{% else %}Add a book{% endif %}</h1>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include 'includes/form_errors.html' %}
+      {% include 'includes/field.html' with field=form.name %}
+      {% include 'includes/field.html' with field=form.description %}
+      <div class="field-row">
+        {% include 'includes/field.html' with field=form.year %}
+        {% include 'includes/field.html' with field=form.count %}
+      </div>
+      {% include 'includes/field.html' with field=form.authors %}
+      <p class="small muted">No author in the list? <a href="{% url 'author_list' %}">Add one first</a>.</p>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" type="submit">{% if book %}Save changes{% else %}Add book{% endif %}</button>
+        <a class="btn btn-secondary" href="{% if book %}{% url 'book_detail' book.id %}{% else %}{% url 'book_list' %}{% endif %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

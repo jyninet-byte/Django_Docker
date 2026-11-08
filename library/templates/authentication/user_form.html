@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Edit {{ profile.full_name }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'user_detail' profile.id %}">← {{ profile.full_name }}</a></p>
+<div class="auth-wrap">
+  <div class="card">
+    <h1>Edit user</h1>
+    <p class="muted">{{ profile.email }} · user #{{ profile.id }}</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include 'includes/form_errors.html' %}
+      <div class="field-row">
+        {% include 'includes/field.html' with field=form.first_name %}
+        {% include 'includes/field.html' with field=form.last_name %}
+      </div>
+      {% include 'includes/field.html' with field=form.middle_name %}
+      {% include 'includes/field.html' with field=form.role %}
+      {% include 'includes/field.html' with field=form.is_active %}
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <a class="btn btn-secondary" href="{% url 'user_detail' profile.id %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

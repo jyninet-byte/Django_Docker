@@ -1,0 +1,16 @@
+{# Renders one Django form field with label, help text and errors #}
+{% with wt=field.widget_type %}
+<div class="field{% if field.errors %} has-error{% endif %}">
+  {% if wt == 'checkbox' %}
+    <label class="checkbox">{{ field }} {{ field.label }}</label>
+  {% elif wt == 'checkboxselectmultiple' %}
+    <span class="label">{{ field.label }}</span>
+    <div class="checkbox-list">{% for option in field %}<label class="checkbox">{{ option.tag }} {{ option.choice_label }}</label>{% endfor %}</div>
+  {% else %}
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+  {% endif %}
+  {% for error in field.errors %}<div class="error-text">{{ error }}</div>{% endfor %}
+  {% if field.help_text and not field.errors %}<div class="hint">{{ field.help_text|safe }}</div>{% endif %}
+</div>
+{% endwith %}

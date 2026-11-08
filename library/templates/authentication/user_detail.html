@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% block title %}{{ profile.full_name }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'user_list' %}">← All users</a></p>
+<div class="grid grid-2">
+  <div class="card">
+    <div class="profile-head">
+      <div class="avatar">{{ profile.first_name|default:profile.email|initial }}</div>
+      <div>
+        <h1 style="margin:0">{{ profile.full_name }}</h1>
+        {% if profile.is_librarian %}<span class="badge badge-brass">Librarian</span>{% else %}<span class="badge badge-blue">Reader</span>{% endif %}
+        {% if profile.is_active %}<span class="badge badge-green">Active</span>{% else %}<span class="badge badge-gray">Inactive</span>{% endif %}
+      </div>
+    </div>
+    <dl class="info">
+      <dt>ID</dt><dd>{{ profile.id }}</dd>
+      <dt>Email</dt><dd>{{ profile.email }}</dd>
+      <dt>First name</dt><dd>{{ profile.first_name|default:'—' }}</dd>
+      <dt>Middle name</dt><dd>{{ profile.middle_name|default:'—' }}</dd>
+      <dt>Last name</dt><dd>{{ profile.last_name|default:'—' }}</dd>
+      <dt>Registered</dt><dd>{{ profile.created_at|date:'d.m.Y H:i' }}</dd>
+      <dt>Last login</dt><dd>{{ profile.last_login|date:'d.m.Y H:i'|default:'—' }}</dd>
+    </dl>
+    <p style="margin-top:20px"><a class="btn btn-secondary" href="{% url 'user_edit' profile.id %}">✎ Edit user</a></p>
+  </div>
+  <div class="card">
+    <div class="card-title">
+      <h2>Books on hand</h2>
+      <a class="btn btn-secondary btn-sm" href="{% url 'user_books' profile.id %}">All books of this user</a>
+    </div>
+    <div class="facts" style="grid-template-columns:1fr 1fr">
+      <div class="fact"><strong>{{ open_orders|length }}</strong><span>reading now</span></div>
+      <div class="fact"><strong>{{ closed_count }}</strong><span>returned</span></div>
+    </div>
+    {% for order in open_orders %}
+      <p style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin:0;padding:10px 0;border-top:1px solid var(--line)">
+        <a href="{% url 'book_detail' order.book.id %}">{{ order.book.name }}</a>
+        {% if order.is_overdue %}<span class="badge badge-red">overdue since {{ order.plated_end_at|date:'d.m.Y' }}</span>{% else %}<span class="badge badge-green">until {{ order.plated_end_at|date:'d.m.Y' }}</span>{% endif %}
+      </p>
+    {% empty %}
+      <p class="muted">No books on hand right now.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

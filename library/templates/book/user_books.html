@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% block title %}Books of {{ reader.full_name }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'user_detail' reader.id %}">← {{ reader.full_name }}</a></p>
+<div class="page-head">
+  <div>
+    <h1>Books of {{ reader.full_name }}</h1>
+    <p class="muted">User #{{ reader.id }} · {{ reader.email }}</p>
+  </div>
+</div>
+
+<div class="card flush">
+  <div style="padding:20px 24px 0"><h2>On hand now <span class="badge badge-green">{{ open_orders|length }}</span></h2></div>
+  {% if open_orders %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Book</th><th>Authors</th><th>Taken</th><th>Return by</th><th></th></tr></thead>
+      <tbody>
+      {% for order in open_orders %}
+        <tr>
+          <td><a href="{% url 'book_detail' order.book.id %}"><strong>{{ order.book.name }}</strong></a></td>
+          <td class="small">{% for a in order.book.authors.all %}{{ a.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+          <td>{{ order.created_at|date:'d.m.Y' }}</td>
+          <td>{% if order.is_overdue %}<span class="badge badge-red">{{ order.plated_end_at|date:'d.m.Y' }} · overdue</span>{% else %}{{ order.plated_end_at|date:'d.m.Y' }}{% endif %}</td>
+          <td class="actions">
+            <form class="inline-form" method="post" action="{% url 'order_close' order.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button class="btn btn-secondary btn-sm" type="submit">Close order</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty">No books on hand.</div>
+  {% endif %}
+</div>
+
+<div class="card flush">
+  <div style="padding:20px 24px 0"><h2>Returned <span class="badge badge-gray">{{ closed_orders|length }}</span></h2></div>
+  {% if closed_orders %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Book</th><th>Taken</th><th>Returned</th></tr></thead>
+      <tbody>
+      {% for order in closed_orders %}
+        <tr>
+          <td><a href="{% url 'book_detail' order.book.id %}">{{ order.book.name }}</a></td>
+          <td>{{ order.created_at|date:'d.m.Y' }}</td>
+          <td>{{ order.end_at|date:'d.m.Y' }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty">Nothing returned yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,206 @@
+newman
+
+Library REST API
+
+❏ 1. Books  /book/{id}
+↳ List books
+  GET http://127.0.0.1:8000/api/v1/book [200 OK, 1.94kB, 323ms]
+  ✓  Status code is 200
+
+↳ Filter books by author and name
+  GET http://127.0.0.1:8000/api/v1/book?author=5&name=farm [200 OK, 477B, 362ms]
+  ✓  Status code is 200
+
+↳ Create book
+  POST http://127.0.0.1:8000/api/v1/book [201 Created, 439B, 352ms]
+  ✓  Status code is 201
+
+↳ Get book
+  GET http://127.0.0.1:8000/api/v1/book/13 [200 OK, 448B, 379ms]
+  ✓  Status code is 200
+
+↳ Update book (PUT)
+  PUT http://127.0.0.1:8000/api/v1/book/13 [200 OK, 456B, 354ms]
+  ✓  Status code is 200
+
+↳ Partial update book (PATCH)
+  PATCH http://127.0.0.1:8000/api/v1/book/13 [200 OK, 456B, 352ms]
+  ✓  Status code is 200
+
+↳ Create book with errors
+  POST http://127.0.0.1:8000/api/v1/book [400 Bad Request, 463B, 415ms]
+  ✓  Status code is 400
+
+↳ Delete book
+  DELETE http://127.0.0.1:8000/api/v1/book/13 [204 No Content, 311B, 354ms]
+  ✓  Status code is 204
+
+↳ Get deleted book
+  GET http://127.0.0.1:8000/api/v1/book/13 [404 Not Found, 388B, 364ms]
+  ✓  Status code is 404
+
+❏ 2. Authors  /author/{id}
+↳ List authors
+  GET http://127.0.0.1:8000/api/v1/author [200 OK, 1.03kB, 417ms]
+  ✓  Status code is 200
+
+↳ Create author
+  POST http://127.0.0.1:8000/api/v1/author [201 Created, 398B, 345ms]
+  ✓  Status code is 201
+
+↳ Get author
+  GET http://127.0.0.1:8000/api/v1/author/12 [200 OK, 407B, 352ms]
+  ✓  Status code is 200
+
+↳ Update author (PUT)
+  PUT http://127.0.0.1:8000/api/v1/author/12 [200 OK, 418B, 363ms]
+  ✓  Status code is 200
+
+↳ Partial update author (PATCH)
+  PATCH http://127.0.0.1:8000/api/v1/author/12 [200 OK, 417B, 368ms]
+  ✓  Status code is 200
+
+↳ Delete author
+  DELETE http://127.0.0.1:8000/api/v1/author/12 [204 No Content, 311B, 374ms]
+  ✓  Status code is 204
+
+↳ Delete author with books (not allowed)
+  DELETE http://127.0.0.1:8000/api/v1/author/1 [400 Bad Request, 412B, 383ms]
+  ✓  Status code is 400
+
+❏ 3. Users  /user/{id}
+↳ List users
+  GET http://127.0.0.1:8000/api/v1/user [200 OK, 1.11kB, 353ms]
+  ✓  Status code is 200
+
+↳ Create user
+  POST http://127.0.0.1:8000/api/v1/user [201 Created, 601B, 680ms]
+  ✓  Status code is 201
+
+↳ Get user
+  GET http://127.0.0.1:8000/api/v1/user/6 [200 OK, 610B, 379ms]
+  ✓  Status code is 200
+
+↳ Update user (PUT)
+  PUT http://127.0.0.1:8000/api/v1/user/6 [200 OK, 598B, 360ms]
+  ✓  Status code is 200
+
+↳ Partial update user (PATCH)
+  PATCH http://127.0.0.1:8000/api/v1/user/6 [200 OK, 600B, 341ms]
+  ✓  Status code is 200
+
+↳ Create user with existing email
+  POST http://127.0.0.1:8000/api/v1/user [400 Bad Request, 383B, 339ms]
+  ✓  Status code is 400
+
+❏ 4. Orders of a user  /user/{id}/order/{id}
+↳ List orders of user 2
+  GET http://127.0.0.1:8000/api/v1/user/2/order [200 OK, 774B, 361ms]
+  ✓  Status code is 200
+
+↳ Create order for user
+  POST http://127.0.0.1:8000/api/v1/user/6/order [201 Created, 468B, 356ms]
+  ✓  Status code is 201
+
+↳ Get order of user
+  GET http://127.0.0.1:8000/api/v1/user/6/order/10 [200 OK, 477B, 327ms]
+  ✓  Status code is 200
+
+↳ Update order of user (PUT)
+  PUT http://127.0.0.1:8000/api/v1/user/6/order/10 [200 OK, 477B, 345ms]
+  ✓  Status code is 200
+
+↳ Close order of user (PATCH end_at)
+  PATCH http://127.0.0.1:8000/api/v1/user/6/order/10 [200 OK, 507B, 373ms]
+  ✓  Status code is 200
+
+↳ Delete order of user
+  DELETE http://127.0.0.1:8000/api/v1/user/6/order/10 [204 No Content, 311B, 373ms]
+  ✓  Status code is 204
+
+↳ Orders of a missing user
+  GET http://127.0.0.1:8000/api/v1/user/9999/order [404 Not Found, 380B, 339ms]
+  ✓  Status code is 404
+
+❏ 5. Orders  /order/{id}
+↳ List orders
+  GET http://127.0.0.1:8000/api/v1/order [200 OK, 1.05kB, 351ms]
+  ✓  Status code is 200
+
+↳ Create order
+  POST http://127.0.0.1:8000/api/v1/order [201 Created, 468B, 366ms]
+  ✓  Status code is 201
+
+↳ Get order
+  GET http://127.0.0.1:8000/api/v1/order/11 [200 OK, 477B, 347ms]
+  ✓  Status code is 200
+
+↳ Update order (PUT)
+  PUT http://127.0.0.1:8000/api/v1/order/11 [200 OK, 477B, 363ms]
+  ✓  Status code is 200
+
+↳ Close order (PATCH end_at)
+  PATCH http://127.0.0.1:8000/api/v1/order/11 [200 OK, 507B, 350ms]
+  ✓  Status code is 200
+
+↳ Create order with a past date
+  POST http://127.0.0.1:8000/api/v1/order [400 Bad Request, 390B, 399ms]
+  ✓  Status code is 400
+
+↳ Create order when no free copies
+  POST http://127.0.0.1:8000/api/v1/order [400 Bad Request, 382B, 369ms]
+  ✓  Status code is 400
+
+↳ Delete order
+  DELETE http://127.0.0.1:8000/api/v1/order/11 [204 No Content, 311B, 333ms]
+  ✓  Status code is 204
+
+❏ 6. Clean up
+↳ Delete user
+  DELETE http://127.0.0.1:8000/api/v1/user/6 [204 No Content, 311B, 351ms]
+  ✓  Status code is 204
+
+↳ Get deleted user
+  GET http://127.0.0.1:8000/api/v1/user/6 [404 Not Found, 394B, 333ms]
+  ✓  Status code is 404
+
+❏ 7. Permissions
+↳ Without login -> 401
+  GET http://127.0.0.1:8000/api/v1/book [401 Unauthorized, 435B, 45ms]
+  ✓  Status code is 401
+
+↳ Reader: list books
+  GET http://127.0.0.1:8000/api/v1/book [200 OK, 1.94kB, 364ms]
+  ✓  Status code is 200
+
+↳ Reader: sees only his orders
+  GET http://127.0.0.1:8000/api/v1/order [200 OK, 774B, 360ms]
+  ✓  Status code is 200
+
+↳ Reader: cannot create a book -> 403
+  POST http://127.0.0.1:8000/api/v1/book [403 Forbidden, 392B, 332ms]
+  ✓  Status code is 403
+
+↳ Reader: cannot see orders of another user -> 403
+  GET http://127.0.0.1:8000/api/v1/user/3/order [403 Forbidden, 375B, 344ms]
+  ✓  Status code is 403
+
+┌─────────────────────────┬────────────────────┬───────────────────┐
+│                         │           executed │            failed │
+├─────────────────────────┼────────────────────┼───────────────────┤
+│              iterations │                  1 │                 0 │
+├─────────────────────────┼────────────────────┼───────────────────┤
+│                requests │                 44 │                 0 │
+├─────────────────────────┼────────────────────┼───────────────────┤
+│            test-scripts │                 44 │                 0 │
+├─────────────────────────┼────────────────────┼───────────────────┤
+│      prerequest-scripts │                 44 │                 0 │
+├─────────────────────────┼────────────────────┼───────────────────┤
+│              assertions │                 44 │                 0 │
+├─────────────────────────┴────────────────────┴───────────────────┤
+│ total run duration: 16.6s                                        │
+├──────────────────────────────────────────────────────────────────┤
+│ total data received: 10.2kB (approx)                             │
+├──────────────────────────────────────────────────────────────────┤
+│ average response time: 358ms [min: 45ms, max: 680ms, s.d.: 70ms] │
+└──────────────────────────────────────────────────────────────────┘

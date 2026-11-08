@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<p>{% if user.is_librarian %}<a href="{% url 'order_list' %}">← All orders</a>{% else %}<a href="{% url 'my_orders' %}">← My orders</a>{% endif %}</p>
+<div class="auth-wrap">
+  <div class="card">
+    <h1>{{ title }}</h1>
+    <dl class="info" style="margin:0 0 20px">
+      <dt>Book</dt><dd><a href="{% url 'book_detail' order.book.id %}">{{ order.book.name }}</a></dd>
+      <dt>Reader</dt><dd>{{ order.user.full_name }}</dd>
+      <dt>Date of issue</dt><dd>{{ order.created_at|date:'d.m.Y H:i' }}</dd>
+    </dl>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include 'includes/form_errors.html' %}
+      {% for field in form %}{% include 'includes/field.html' %}{% endfor %}
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" type="submit">Save</button>
+        <a class="btn btn-secondary" href="{% if user.is_librarian %}{% url 'order_list' %}{% else %}{% url 'my_orders' %}{% endif %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

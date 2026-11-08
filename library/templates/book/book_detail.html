@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% block title %}{{ book.name }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'book_list' %}">← All books</a></p>
+<div class="grid grid-sidebar">
+  <div>
+    <div class="cover detail-cover {{ book.id|cover }}">{{ book.name }}</div>
+  </div>
+  <div>
+    <div class="card">
+      <div class="card-title">
+        <h1 style="margin:0">{{ book.name }}</h1>
+        {% if user.is_librarian %}<a class="btn btn-secondary btn-sm" href="{% url 'book_edit' book.id %}">✎ Edit book</a>{% endif %}
+      </div>
+      <div class="author-chips">
+        {% for author in book.authors.all %}
+          <a class="chip" href="{% url 'book_list' %}?author={{ author.id }}">{{ author.full_name }}</a>
+        {% empty %}
+          <span class="muted">Unknown author</span>
+        {% endfor %}
+      </div>
+      <div class="facts">
+        <div class="fact"><strong>{{ book.count }}</strong><span>copies</span></div>
+        <div class="fact"><strong>{{ book.active_orders_count }}</strong><span>taken</span></div>
+        <div class="fact"><strong>{{ book.available_count }}</strong><span>available</span></div>
+      </div>
+      <h3>Description</h3>
+      <p>{{ book.description|default:'No description yet.'|linebreaksbr }}</p>
+      <p class="small muted">Book ID: {{ book.id }}{% if book.year %} · Published in {{ book.year }}{% endif %}</p>
+    </div>
+
+    {% if user.is_librarian %}
+      <div class="card">
+        <div class="card-title"><h2>Who has this book</h2></div>
+        {% if open_orders %}
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Reader</th><th>Taken</th><th>Return by</th><th></th></tr></thead>
+              <tbody>
+                {% for order in open_orders %}
+                  <tr>
+                    <td><a href="{% url 'user_detail' order.user.id %}">{{ order.user.full_name }}</a></td>
+                    <td>{{ order.created_at|date:'d.m.Y' }}</td>
+                    <td>{% if order.is_overdue %}<span class="badge badge-red">{{ order.plated_end_at|date:'d.m.Y' }}</span>{% else %}{{ order.plated_end_at|date:'d.m.Y' }}{% endif %}</td>
+                    <td class="actions">
+                      <form class="inline-form" method="post" action="{% url 'order_close' order.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button class="btn btn-secondary btn-sm" type="submit">Close order</button>
+                      </form>
+                      <a class="btn btn-ghost btn-sm" href="{% url 'order_edit' order.id %}">Edit</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="muted">All copies are on the shelf.</p>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="card">
+        <h2>Take this book</h2>
+        {% if my_open_order %}
+          <p>You already have this book. Please return it by <strong>{{ my_open_order.plated_end_at|date:'d.m.Y' }}</strong>.</p>
+          <a class="btn btn-secondary" href="{% url 'order_extend' my_open_order.id %}">Change return date</a>
+          <a class="btn btn-ghost" href="{% url 'my_orders' %}">Go to my orders</a>
+        {% elif book.available_count > 0 %}
+          <form method="post" action="{% url 'order_create' %}" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="book_id" value="{{ book.id }}">
+            {% include 'includes/form_errors.html' with form=order_form %}
+            <div style="max-width:280px">{% include 'includes/field.html' with field=order_form.plated_end_at %}</div>
+            <button class="btn btn-primary" type="submit">Order the book</button>
+          </form>
+        {% else %}
+          <p class="muted">Sorry, all copies are taken right now. Please check back later.</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

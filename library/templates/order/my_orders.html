@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% block title %}My orders{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>My orders</h1><p class="muted">Books you have taken from the library.</p></div>
+  {% if not user.is_librarian %}<a class="btn btn-primary" href="{% url 'book_list' %}?available=1">Find a book</a>{% endif %}
+</div>
+
+<div class="tabs">
+  {% for value, label in statuses %}
+    <a class="tab {% if status == value %}active{% endif %}" href="{% query_with status=value %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+{% if orders %}
+  <div class="book-grid">
+    {% for order in orders %}
+      <div class="book-card">
+        <a class="cover {{ order.book.id|cover }}" href="{% url 'book_detail' order.book.id %}" style="color:#fff;text-decoration:none">{{ order.book.name }}</a>
+        <div class="book-body">
+          <div class="small muted">Order #{{ order.id }} · taken {{ order.created_at|date:'d.m.Y' }}</div>
+          <div class="small">{% if order.end_at %}Returned {{ order.end_at|date:'d.m.Y' }}{% else %}Return by <strong>{{ order.plated_end_at|date:'d.m.Y' }}</strong>{% endif %}</div>
+          <div class="book-meta">
+            {% include 'order/_status_badge.html' %}
+            {% if not order.end_at %}<a class="btn btn-ghost btn-sm" href="{% url 'order_extend' order.id %}">Change date</a>{% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card empty"><div class="icon">📚</div>You have no orders here yet. <a href="{% url 'book_list' %}">Browse books</a></div>
+{% endif %}
+{% endblock %}
